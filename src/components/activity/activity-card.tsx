@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowUpRight, Mountain, Timer } from 'lucide-react';
 import type { CSSProperties } from 'react';
+import { RoutePreview } from '@/components/activity/route-preview';
 import { formatActivityDate, formatDistance, formatElevation, formatPaceOrSpeed, getActivityAccent } from '@/lib/format';
 import type { Activity } from '@/types/domain';
 
@@ -36,6 +37,7 @@ export const ActivityCard = ({ activity }: ActivityCardProps) => {
       </div>
 
       <p className="activity-card__date">{formatActivityDate(activity.start_date)}</p>
+      <RoutePreview activity={activity} />
 
       <div className="activity-card__stats">
         <span>{formatDistance(activity.distance_meters)}</span>

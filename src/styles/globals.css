@@ -9,11 +9,33 @@
   --muted: #9aa3c7;
   --muted-2: #7a84a5;
   --shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+  --surface-grad-start: rgba(18, 20, 32, 0.88);
+  --surface-grad-end: rgba(10, 12, 20, 0.94);
+  --surface-soft: rgba(255, 255, 255, 0.04);
+  --surface-soft-border: rgba(255, 255, 255, 0.06);
+  --input-bg: rgba(255, 255, 255, 0.04);
+  --input-border: rgba(255, 255, 255, 0.08);
   --radius-lg: 28px;
   --radius-md: 20px;
   --orange: #ff8f4d;
   --blue: #5aa8ff;
   --violet: #b07cff;
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f4f1ea;
+  --border: rgba(22, 28, 45, 0.1);
+  --text: #1f2434;
+  --muted: #5f6784;
+  --muted-2: #7e859e;
+  --shadow: 0 20px 60px rgba(97, 88, 71, 0.12);
+  --surface-grad-start: rgba(255, 255, 255, 0.9);
+  --surface-grad-end: rgba(245, 239, 230, 0.96);
+  --surface-soft: rgba(32, 42, 74, 0.045);
+  --surface-soft-border: rgba(32, 42, 74, 0.08);
+  --input-bg: rgba(255, 255, 255, 0.78);
+  --input-border: rgba(32, 42, 74, 0.12);
 }
 
 * {
@@ -33,6 +55,13 @@ body {
     linear-gradient(180deg, #09090f 0%, #05060b 100%);
   color: var(--text);
   min-height: 100vh;
+}
+
+[data-theme='light'] body {
+  background:
+    radial-gradient(circle at top left, rgba(255, 143, 77, 0.14), transparent 34%),
+    radial-gradient(circle at 80% 10%, rgba(90, 168, 255, 0.12), transparent 30%),
+    linear-gradient(180deg, #faf7f1 0%, #f1ede4 100%);
 }
 
 body,
@@ -113,7 +142,7 @@ img {
 .signature-card,
 .stat-card {
   backdrop-filter: blur(18px);
-  background: linear-gradient(180deg, rgba(18, 20, 32, 0.88), rgba(10, 12, 20, 0.94));
+  background: linear-gradient(180deg, var(--surface-grad-start), var(--surface-grad-end));
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
 }
@@ -168,16 +197,16 @@ strong {
 .footer__link,
 .ghost-button,
 .filter-pill {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--surface-soft);
+  border: 1px solid var(--surface-soft-border);
   color: var(--muted);
 }
 
 .topbar__nav-link.is-active,
 .filter-pill.is-active {
   color: var(--text);
-  border-color: rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.08);
+  border-color: color-mix(in srgb, var(--text) 16%, transparent);
+  background: color-mix(in srgb, var(--surface-soft) 100%, transparent);
 }
 
 .topbar__nav-link:hover,
@@ -186,6 +215,24 @@ strong {
 .filter-pill:hover,
 .primary-button:hover {
   transform: translateY(-1px);
+}
+
+.topbar__controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 11px 16px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--orange) 20%, var(--surface-soft)), var(--surface-soft));
+  border: 1px solid color-mix(in srgb, var(--orange) 24%, var(--surface-soft-border));
+  color: var(--text);
 }
 
 .page-shell {
@@ -280,7 +327,7 @@ strong {
   gap: 8px;
   color: var(--muted);
   padding: 11px 14px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface-soft);
   border-radius: 999px;
 }
 
@@ -433,11 +480,49 @@ strong {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--surface-soft) 100%, transparent);
 }
 
 .activity-card__stats {
   margin: 26px 0 22px;
+}
+
+.route-preview {
+  position: relative;
+  margin-top: 18px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--input-border);
+  background:
+    radial-gradient(circle at 85% 10%, var(--activity-glow), transparent 38%),
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-grad-start) 90%, transparent), color-mix(in srgb, var(--surface-grad-end) 96%, transparent));
+}
+
+.route-preview__svg {
+  width: 100%;
+  height: 78px;
+  display: block;
+}
+
+.route-preview__grid {
+  stroke: color-mix(in srgb, var(--text) 8%, transparent);
+  stroke-width: 1;
+  fill: none;
+}
+
+.route-preview__dot {
+  fill: rgba(255, 255, 255, 0.85);
+}
+
+.route-preview__dot--start {
+  fill: rgba(255, 255, 255, 0.35);
+}
+
+.route-preview__fallback {
+  height: 78px;
+  background:
+    linear-gradient(115deg, transparent 0%, color-mix(in srgb, var(--text) 8%, transparent) 35%, transparent 60%),
+    radial-gradient(circle at 30% 60%, color-mix(in srgb, var(--text) 10%, transparent), transparent 22%);
 }
 
 .activity-card__stats span {
@@ -488,8 +573,8 @@ strong {
   gap: 10px;
   padding: 13px 16px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
 }
 
 .search-input input,
@@ -637,6 +722,142 @@ strong {
   min-height: 330px;
 }
 
+.heatmap-card {
+  padding: 28px;
+  border-radius: 30px;
+  backdrop-filter: blur(18px);
+  background: linear-gradient(180deg, var(--surface-grad-start), var(--surface-grad-end));
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.heatmap-card__header,
+.heatmap-card__summary,
+.heatmap-card__meta,
+.heatmap__months,
+.heatmap__legend {
+  display: flex;
+  gap: 12px;
+}
+
+.heatmap-card__header {
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.heatmap-card__summary {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.heatmap-card__summary span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  color: var(--muted);
+  background: var(--surface-soft);
+}
+
+.heatmap-card__meta {
+  margin: 18px 0 22px;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+
+.heatmap {
+  display: grid;
+  gap: 14px;
+}
+
+.heatmap__months {
+  display: grid;
+  grid-template-columns: repeat(53, minmax(0, 1fr));
+  gap: 4px;
+  color: var(--muted-2);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.heatmap__month {
+  min-width: 0;
+}
+
+.heatmap__grid {
+  display: grid;
+  grid-template-columns: repeat(53, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.heatmap__week {
+  display: grid;
+  gap: 4px;
+}
+
+.heatmap__cell,
+.heatmap__legend-cell {
+  aspect-ratio: 1;
+  min-height: 10px;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--text) 6%, transparent);
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.heatmap__cell.is-current {
+  outline: 1px solid color-mix(in srgb, var(--text) 10%, transparent);
+}
+
+.heatmap__cell:hover {
+  transform: scale(1.18);
+  box-shadow: 0 0 18px var(--heatmap-glow);
+  z-index: 1;
+}
+
+.heatmap__cell--level-0,
+.heatmap__legend-cell--level-0 {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.heatmap__cell--level-1,
+.heatmap__legend-cell--level-1 {
+  background: color-mix(in srgb, var(--heatmap-accent, #b07cff) 28%, rgba(255, 255, 255, 0.05));
+}
+
+.heatmap__cell--level-2,
+.heatmap__legend-cell--level-2 {
+  background: color-mix(in srgb, var(--heatmap-accent, #b07cff) 48%, rgba(255, 255, 255, 0.05));
+}
+
+.heatmap__cell--level-3,
+.heatmap__legend-cell--level-3 {
+  background: color-mix(in srgb, var(--heatmap-accent, #b07cff) 68%, rgba(255, 255, 255, 0.04));
+}
+
+.heatmap__cell--level-4,
+.heatmap__legend-cell--level-4 {
+  background: color-mix(in srgb, var(--heatmap-accent, #b07cff) 88%, rgba(255, 255, 255, 0.02));
+  box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.14);
+}
+
+.heatmap__legend {
+  align-items: center;
+  justify-content: flex-end;
+  color: var(--muted);
+}
+
+.heatmap__legend-cell {
+  width: 12px;
+  min-height: 12px;
+}
+
 .detail-skeleton {
   min-height: 580px;
 }
@@ -671,6 +892,15 @@ strong {
   .connect-actions {
     justify-content: start;
   }
+
+  .heatmap-card__header,
+  .heatmap-card__meta {
+    display: grid;
+  }
+
+  .topbar__controls {
+    display: grid;
+  }
 }
 
 @media (max-width: 720px) {
@@ -699,5 +929,19 @@ strong {
 
   .route-map__frame {
     height: 320px;
+  }
+
+  .heatmap-card {
+    padding: 22px;
+  }
+
+  .heatmap__months,
+  .heatmap__grid {
+    gap: 3px;
+  }
+
+  .heatmap__cell,
+  .heatmap__legend-cell {
+    border-radius: 4px;
   }
 }

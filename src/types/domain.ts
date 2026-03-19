@@ -4,6 +4,7 @@ export type Activity = Database['public']['Tables']['activities']['Row'];
 export type ActivityStream = Database['public']['Tables']['activity_streams']['Row'];
 export type AggregatedStat = Database['public']['Tables']['aggregated_stats']['Row'];
 export type DashboardOverview = Database['public']['Views']['dashboard_overview']['Row'];
+export type HeatmapActivity = Pick<Activity, 'id' | 'start_date' | 'distance_meters' | 'sport_type'>;
 
 export type ActivityFilter = 'all' | 'Ride' | 'Run' | 'Workout' | 'Hike' | 'Walk';
 export type BucketGranularity = AggregatedStat['bucket_granularity'];

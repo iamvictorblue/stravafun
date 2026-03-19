@@ -6,7 +6,9 @@ import type {
   AggregatedStat,
   BucketGranularity,
   DashboardOverview,
+  HeatmapActivity,
 } from '@/types/domain';
+import { subYears } from 'date-fns';
 
 const PAGE_SIZE = 12;
 
@@ -95,4 +97,16 @@ export const fetchBreakdownStats = async (): Promise<AggregatedStat[]> => {
 
   if (error) throw error;
   return data;
+};
+
+export const fetchHeatmapActivities = async (): Promise<HeatmapActivity[]> => {
+  const since = subYears(new Date(), 1).toISOString();
+  const { data, error } = await supabase
+    .from('activities')
+    .select('id, start_date, distance_meters, sport_type')
+    .gte('start_date', since)
+    .order('start_date', { ascending: true });
+
+  if (error) throw error;
+  return data as HeatmapActivity[];
 };

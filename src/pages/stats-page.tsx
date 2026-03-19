@@ -1,9 +1,10 @@
 import { ActivityBreakdownChart } from '@/components/charts/activity-breakdown-chart';
 import { DistanceTrendChart } from '@/components/charts/distance-trend-chart';
+import { YearlyHeatmap } from '@/components/charts/yearly-heatmap';
 import { EmptyState } from '@/components/ui/empty-state';
 import { SectionShell } from '@/components/ui/section-shell';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useAggregatedStats, useBreakdownStats } from '@/hooks/use-stats';
+import { useAggregatedStats, useBreakdownStats, useHeatmapActivities } from '@/hooks/use-stats';
 import { formatDistance, formatElevation, formatMovingTime } from '@/lib/format';
 
 export const StatsPage = () => {
@@ -11,8 +12,9 @@ export const StatsPage = () => {
   const monthlyQuery = useAggregatedStats('month');
   const yearlyQuery = useAggregatedStats('year');
   const breakdownQuery = useBreakdownStats();
+  const heatmapQuery = useHeatmapActivities();
 
-  if (weeklyQuery.isLoading || monthlyQuery.isLoading || yearlyQuery.isLoading) {
+  if (weeklyQuery.isLoading || monthlyQuery.isLoading || yearlyQuery.isLoading || heatmapQuery.isLoading) {
     return (
       <div className="stack-xl">
         <Skeleton className="chart-skeleton" />
@@ -21,7 +23,7 @@ export const StatsPage = () => {
     );
   }
 
-  if (weeklyQuery.error || monthlyQuery.error || yearlyQuery.error) {
+  if (weeklyQuery.error || monthlyQuery.error || yearlyQuery.error || heatmapQuery.error) {
     return <EmptyState title="Stats unavailable" description="Aggregated stats could not be loaded from Supabase." />;
   }
 
@@ -57,6 +59,7 @@ export const StatsPage = () => {
 
       <DistanceTrendChart title="Weekly rhythm" granularity="week" stats={weeklyQuery.data?.slice(-10) ?? []} />
       <DistanceTrendChart title="Yearly arc" granularity="year" stats={yearlyQuery.data ?? []} />
+      <YearlyHeatmap activities={heatmapQuery.data ?? []} />
       <ActivityBreakdownChart stats={breakdownQuery.data ?? []} />
     </div>
   );

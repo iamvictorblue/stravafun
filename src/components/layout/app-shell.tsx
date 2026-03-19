@@ -1,5 +1,6 @@
-import { Compass, Flame, LineChart, LockKeyhole } from 'lucide-react';
+import { Compass, Flame, LineChart, LockKeyhole, MoonStar, SunMedium } from 'lucide-react';
 import { NavLink, Outlet } from 'react-router-dom';
+import { useTheme } from '@/app/use-theme';
 import { PageTransition } from '@/components/layout/page-transition';
 import { siteTitle } from '@/lib/constants';
 
@@ -9,45 +10,56 @@ const navItems = [
   { to: '/stats', label: 'Stats', icon: LineChart },
 ];
 
-export const AppShell = () => (
-  <div className="app-shell">
-    <div className="ambient ambient--orange" />
-    <div className="ambient ambient--blue" />
-    <div className="ambient ambient--violet" />
+export const AppShell = () => {
+  const { theme, toggleTheme } = useTheme();
 
-    <header className="topbar">
-      <div>
-        <p className="eyebrow">Public dashboard</p>
-        <h1 className="topbar__title">{siteTitle}</h1>
-      </div>
+  return (
+    <div className="app-shell">
+      <div className="ambient ambient--orange" />
+      <div className="ambient ambient--blue" />
+      <div className="ambient ambient--violet" />
 
-      <nav className="topbar__nav" aria-label="Primary">
-        {navItems.map(({ to, label, icon: Icon }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={to === '/'}
-            className={({ isActive }) => `topbar__nav-link ${isActive ? 'is-active' : ''}`}
-          >
-            <Icon size={16} />
-            {label}
-          </NavLink>
-        ))}
-      </nav>
-    </header>
+      <header className="topbar">
+        <div>
+          <p className="eyebrow">Public dashboard</p>
+          <h1 className="topbar__title">{siteTitle}</h1>
+        </div>
 
-    <main className="page-shell">
-      <PageTransition>
-        <Outlet />
-      </PageTransition>
-    </main>
+        <div className="topbar__controls">
+          <nav className="topbar__nav" aria-label="Primary">
+            {navItems.map(({ to, label, icon: Icon }) => (
+              <NavLink
+                key={to}
+                to={to}
+                end={to === '/'}
+                className={({ isActive }) => `topbar__nav-link ${isActive ? 'is-active' : ''}`}
+              >
+                <Icon size={16} />
+                {label}
+              </NavLink>
+            ))}
+          </nav>
 
-    <footer className="footer">
-      <p>Synced privately from Strava. Served publicly from Supabase.</p>
-      <NavLink className="footer__link" to="/connect">
-        <LockKeyhole size={15} />
-        Owner setup
-      </NavLink>
-    </footer>
-  </div>
-);
+          <button type="button" className="theme-toggle" onClick={toggleTheme} aria-label="Toggle light mode">
+            {theme === 'dark' ? <SunMedium size={16} /> : <MoonStar size={16} />}
+            {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+          </button>
+        </div>
+      </header>
+
+      <main className="page-shell">
+        <PageTransition>
+          <Outlet />
+        </PageTransition>
+      </main>
+
+      <footer className="footer">
+        <p>Synced privately from Strava. Served publicly from Supabase.</p>
+        <NavLink className="footer__link" to="/connect">
+          <LockKeyhole size={15} />
+          Owner setup
+        </NavLink>
+      </footer>
+    </div>
+  );
+};

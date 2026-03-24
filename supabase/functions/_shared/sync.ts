@@ -7,6 +7,7 @@ import {
   getStoredToken,
   persistToken,
   refreshStravaToken,
+  type StoredStravaToken,
   upsertActivities,
   upsertAthlete,
   upsertStream,
@@ -24,7 +25,7 @@ export const requireAuthorizedRequest = (request: Request) => {
   }
 };
 
-export const ensureValidToken = async () => {
+export const ensureValidToken = async (): Promise<StoredStravaToken> => {
   const supabase = createServiceClient();
   const storedToken = await getStoredToken(supabase);
   const expiresSoon = new Date(storedToken.expires_at).getTime() - Date.now() < 5 * 60 * 1000;
@@ -39,12 +40,14 @@ export const ensureValidToken = async () => {
     refreshToken: storedToken.refresh_token,
   });
 
-  await persistToken(supabase, refreshed);
+  await persistToken(supabase, refreshed, storedToken.athlete_id);
   return {
     ...storedToken,
     access_token: refreshed.access_token,
     refresh_token: refreshed.refresh_token,
     expires_at: new Date(refreshed.expires_at * 1000).toISOString(),
+    token_type: refreshed.token_type ?? storedToken.token_type ?? 'Bearer',
+    scope: refreshed.scope ? refreshed.scope.split(',') : (storedToken.scope ?? []),
   };
 };
 
@@ -61,6 +64,9 @@ const createLog = async (syncType: string, metadata?: Record<string, unknown>) =
     .single();
 
   if (error) throw error;
+  if (!data?.id) {
+    throw new Error('Failed to create sync log entry.');
+  }
   return data.id as string;
 };
 

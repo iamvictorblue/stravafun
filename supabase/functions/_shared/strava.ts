@@ -4,11 +4,20 @@ const STRAVA_API_URL = 'https://www.strava.com/api/v3';
 
 export type StravaTokenResponse = {
   access_token: string;
-  athlete: { id: number } & Record<string, unknown>;
+  athlete?: ({ id: number } & Record<string, unknown>) | null;
   expires_at: number;
   refresh_token: string;
   scope?: string;
   token_type?: string;
+};
+
+export type StoredStravaToken = {
+  athlete_id: number;
+  access_token: string;
+  refresh_token: string;
+  expires_at: string;
+  token_type?: string | null;
+  scope?: string[] | null;
 };
 
 export type StravaAthlete = {
@@ -147,13 +156,24 @@ export const fetchActivityStreams = (accessToken: string, activityId: number) =>
     key_by_type: 'true',
   });
 
+const resolveAthleteId = (token: StravaTokenResponse, fallbackAthleteId?: number) => {
+  const athleteId = token.athlete?.id ?? fallbackAthleteId;
+
+  if (typeof athleteId !== 'number') {
+    throw new Error('Strava token response did not include an athlete id.');
+  }
+
+  return athleteId;
+};
+
 export const persistToken = async (
   supabase: SupabaseClient,
   token: StravaTokenResponse,
+  fallbackAthleteId?: number,
 ) => {
   const { error } = await supabase.from('strava_tokens').upsert(
     {
-      athlete_id: token.athlete.id,
+      athlete_id: resolveAthleteId(token, fallbackAthleteId),
       access_token: token.access_token,
       refresh_token: token.refresh_token,
       expires_at: new Date(token.expires_at * 1000).toISOString(),
@@ -276,5 +296,5 @@ export const getStoredToken = async (supabase: SupabaseClient) => {
 
   if (error) throw error;
   if (!data) throw new Error('No Strava token has been stored yet.');
-  return data;
+  return data as StoredStravaToken;
 };

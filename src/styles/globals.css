@@ -139,6 +139,8 @@ img {
 .connect-card,
 .not-found,
 .mini-stat-card,
+.comparison-card,
+.spotlight-card,
 .signature-card,
 .stat-card {
   backdrop-filter: blur(18px);
@@ -372,7 +374,9 @@ strong {
 .stats-grid,
 .two-column-grid,
 .activity-grid,
-.signature-grid {
+.signature-grid,
+.comparison-grid,
+.spotlight-grid {
   display: grid;
   gap: 18px;
 }
@@ -382,6 +386,14 @@ strong {
 }
 
 .signature-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.comparison-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.spotlight-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
@@ -413,6 +425,8 @@ strong {
 .stat-card__label,
 .stat-card__subtitle,
 .mini-stat-card p,
+.comparison-card__detail,
+.spotlight-card__meta,
 .activity-card__date {
   margin: 0;
   color: var(--muted);
@@ -554,7 +568,8 @@ strong {
 }
 
 .signature-card,
-.mini-stat-card {
+.mini-stat-card,
+.comparison-card {
   padding: 22px;
   border-radius: 24px;
   display: grid;
@@ -562,8 +577,165 @@ strong {
 }
 
 .signature-card strong,
-.mini-stat-card strong {
+.mini-stat-card strong,
+.comparison-card strong {
   font-size: 1.6rem;
+}
+
+.comparison-card__eyebrow,
+.spotlight-card__eyebrow {
+  margin: 0;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+}
+
+.comparison-card__headline,
+.spotlight-card__value {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.8rem, 3vw, 2.35rem);
+}
+
+.comparison-card__rows {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.comparison-card__row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  color: var(--muted);
+  align-items: center;
+}
+
+.comparison-card__row strong {
+  font-size: 1rem;
+}
+
+.spotlight-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 26px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.spotlight-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 82% 12%, var(--spotlight-glow), transparent 32%),
+    var(--spotlight-gradient);
+}
+
+.spotlight-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.spotlight-card__eyebrow {
+  color: var(--spotlight-solid);
+}
+
+.spotlight-card h3 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.spotlight-card__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.spotlight-card .ghost-button {
+  margin-top: auto;
+  width: fit-content;
+}
+
+.weekly-recap-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  padding: 26px;
+  border: 1px solid var(--border);
+  background:
+    radial-gradient(circle at 82% 16%, color-mix(in srgb, var(--orange) 22%, transparent), transparent 26%),
+    linear-gradient(135deg, color-mix(in srgb, var(--orange) 18%, var(--surface-grad-start)), var(--surface-grad-end));
+  box-shadow: var(--shadow);
+  display: grid;
+  gap: 22px;
+}
+
+.weekly-recap-card__header,
+.weekly-recap-card__stats,
+.weekly-recap-card__footer {
+  position: relative;
+  z-index: 1;
+}
+
+.weekly-recap-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.weekly-recap-card__eyebrow,
+.weekly-recap-card__footer p,
+.weekly-recap-card__stats span {
+  margin: 0;
+  color: var(--muted);
+}
+
+.weekly-recap-card__header h3 {
+  margin: 8px 0 0;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+}
+
+.weekly-recap-card__distance {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  white-space: nowrap;
+}
+
+.weekly-recap-card__stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.weekly-recap-card__stats article {
+  padding: 16px 18px;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--surface-soft) 70%, transparent);
+  border: 1px solid var(--surface-soft-border);
+  display: grid;
+  gap: 8px;
+}
+
+.weekly-recap-card__stats strong {
+  font-size: 1.4rem;
+}
+
+.weekly-recap-card__footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.weekly-recap-card__footer p {
+  max-width: 68ch;
+  line-height: 1.6;
 }
 
 .search-input,
@@ -874,6 +1046,8 @@ strong {
   .two-column-grid,
   .stats-grid,
   .signature-grid,
+  .comparison-grid,
+  .spotlight-grid,
   .activity-grid,
   .topbar,
   .footer {
@@ -894,7 +1068,9 @@ strong {
   }
 
   .heatmap-card__header,
-  .heatmap-card__meta {
+  .heatmap-card__meta,
+  .weekly-recap-card__header,
+  .weekly-recap-card__footer {
     display: grid;
   }
 
@@ -915,7 +1091,8 @@ strong {
   .connect-card,
   .not-found,
   .topbar,
-  .detail-hero {
+  .detail-hero,
+  .weekly-recap-card {
     padding: 22px;
   }
 
@@ -943,5 +1120,9 @@ strong {
   .heatmap__cell,
   .heatmap__legend-cell {
     border-radius: 4px;
+  }
+
+  .weekly-recap-card__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

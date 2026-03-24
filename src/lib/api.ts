@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase';
 import type {
   Activity,
   ActivityFiltersState,
+  ActivitySpotlights,
   ActivityStream,
   AggregatedStat,
   BucketGranularity,
@@ -27,6 +28,36 @@ export const fetchRecentActivities = async (limit = 6): Promise<Activity[]> => {
 
   if (error) throw error;
   return data;
+};
+
+const pickUniqueActivity = (activities: Activity[], usedIds: Set<number>) => {
+  const selected = activities.find((activity) => !usedIds.has(activity.id)) ?? activities[0] ?? null;
+
+  if (selected) {
+    usedIds.add(selected.id);
+  }
+
+  return selected;
+};
+
+export const fetchActivitySpotlights = async (): Promise<ActivitySpotlights> => {
+  const [distanceResult, climbResult, sessionResult] = await Promise.all([
+    supabase.from('activities').select('*').order('distance_meters', { ascending: false }).limit(5),
+    supabase.from('activities').select('*').gt('total_elevation_gain', 0).order('total_elevation_gain', { ascending: false }).limit(5),
+    supabase.from('activities').select('*').order('moving_time_seconds', { ascending: false }).limit(5),
+  ]);
+
+  if (distanceResult.error) throw distanceResult.error;
+  if (climbResult.error) throw climbResult.error;
+  if (sessionResult.error) throw sessionResult.error;
+
+  const usedIds = new Set<number>();
+
+  return {
+    longestDistance: pickUniqueActivity(distanceResult.data, usedIds),
+    biggestClimb: pickUniqueActivity(climbResult.data, usedIds),
+    longestSession: pickUniqueActivity(sessionResult.data, usedIds),
+  };
 };
 
 export const fetchActivities = async (

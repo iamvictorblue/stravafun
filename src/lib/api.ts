@@ -6,6 +6,7 @@ import type {
   ActivityStream,
   AggregatedStat,
   BucketGranularity,
+  CalorieActivity,
   DashboardOverview,
   HeatmapActivity,
 } from '@/types/domain';
@@ -41,23 +42,36 @@ const pickUniqueActivity = (activities: Activity[], usedIds: Set<number>) => {
 };
 
 export const fetchActivitySpotlights = async (): Promise<ActivitySpotlights> => {
-  const [distanceResult, climbResult, sessionResult] = await Promise.all([
+  const [distanceResult, climbResult, burnResult, sessionResult] = await Promise.all([
     supabase.from('activities').select('*').order('distance_meters', { ascending: false }).limit(5),
     supabase.from('activities').select('*').gt('total_elevation_gain', 0).order('total_elevation_gain', { ascending: false }).limit(5),
+    supabase.from('activities').select('*').gt('kilojoules', 0).order('kilojoules', { ascending: false }).limit(5),
     supabase.from('activities').select('*').order('moving_time_seconds', { ascending: false }).limit(5),
   ]);
 
   if (distanceResult.error) throw distanceResult.error;
   if (climbResult.error) throw climbResult.error;
+  if (burnResult.error) throw burnResult.error;
   if (sessionResult.error) throw sessionResult.error;
 
   const usedIds = new Set<number>();
 
   return {
+    biggestBurn: pickUniqueActivity(burnResult.data, usedIds),
     longestDistance: pickUniqueActivity(distanceResult.data, usedIds),
     biggestClimb: pickUniqueActivity(climbResult.data, usedIds),
     longestSession: pickUniqueActivity(sessionResult.data, usedIds),
   };
+};
+
+export const fetchCalorieActivities = async (): Promise<CalorieActivity[]> => {
+  const { data, error } = await supabase
+    .from('activities')
+    .select('id, name, start_date, sport_type, distance_meters, moving_time_seconds, total_elevation_gain, kilojoules')
+    .order('start_date', { ascending: true });
+
+  if (error) throw error;
+  return data as CalorieActivity[];
 };
 
 export const fetchActivities = async (

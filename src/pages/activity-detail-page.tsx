@@ -6,7 +6,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { SectionShell } from '@/components/ui/section-shell';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useActivityDetail, useActivityStream } from '@/hooks/use-activity-detail';
-import { formatActivityDate, formatDistance, formatElevation, formatMovingTime, formatPaceOrSpeed } from '@/lib/format';
+import { formatActivityDate, formatCalories, formatDistance, formatElevation, formatMovingTime, formatPaceOrSpeed } from '@/lib/format';
 
 export const ActivityDetailPage = () => {
   const params = useParams();
@@ -36,6 +36,7 @@ export const ActivityDetailPage = () => {
           <span>{formatDistance(activity.distance_meters)}</span>
           <span>{formatPaceOrSpeed(activity)}</span>
           <span>{formatElevation(activity.total_elevation_gain)}</span>
+          {activity.kilojoules ? <span>{formatCalories(activity.kilojoules)}</span> : null}
         </div>
       </section>
 
@@ -55,8 +56,8 @@ export const ActivityDetailPage = () => {
           <strong>{formatPaceOrSpeed(activity)}</strong>
         </article>
         <article className="mini-stat-card">
-          <p>Kudos</p>
-          <strong>{activity.kudos_count ?? 0}</strong>
+          <p>Est. calories</p>
+          <strong>{activity.kilojoules ? formatCalories(activity.kilojoules) : 'Unavailable'}</strong>
         </article>
       </div>
 

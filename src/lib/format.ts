@@ -23,6 +23,11 @@ export const formatMovingTime = (seconds: number | null | undefined) => {
   return `${hours}h ${minutes}m`;
 };
 
+export const formatCalories = (value: number | null | undefined) => {
+  if (!value) return '0 kcal';
+  return `${Math.round(value).toLocaleString()} kcal`;
+};
+
 export const formatActivityDate = (iso: string) => format(parseISO(iso), 'MMM d, yyyy');
 export const formatShortDate = (iso: string) => format(parseISO(iso), 'MMM d');
 

@@ -361,6 +361,15 @@ strong {
   text-align: center;
 }
 
+.hero-card__totals-label {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: var(--muted-2);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+}
+
 .hero-card__totals p {
   margin: 0;
   font-family: 'Syne', sans-serif;

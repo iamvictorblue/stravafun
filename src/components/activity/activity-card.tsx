@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, Mountain, Timer } from 'lucide-react';
+import { ArrowUpRight, Flame, Mountain, Timer } from 'lucide-react';
 import type { CSSProperties } from 'react';
 import { RoutePreview } from '@/components/activity/route-preview';
-import { formatActivityDate, formatDistance, formatElevation, formatPaceOrSpeed, getActivityAccent } from '@/lib/format';
+import { formatActivityDate, formatCalories, formatDistance, formatElevation, formatPaceOrSpeed, getActivityAccent } from '@/lib/format';
 import type { Activity } from '@/types/domain';
 
 type ActivityCardProps = {
@@ -53,6 +53,12 @@ export const ActivityCard = ({ activity }: ActivityCardProps) => {
           <Timer size={14} />
           {Math.round(activity.moving_time_seconds / 60)} min
         </span>
+        {activity.kilojoules ? (
+          <span>
+            <Flame size={14} />
+            {formatCalories(activity.kilojoules)}
+          </span>
+        ) : null}
       </div>
     </motion.article>
   );

@@ -1,14 +1,16 @@
-import { MapPin, TimerReset } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { MapPin, TimerReset } from 'lucide-react';
 import type { CSSProperties } from 'react';
-import { formatDistance, formatMovingTime, formatRelativeSync, getActivityAccent, pluralize } from '@/lib/format';
+import type { CalorieSummary } from '@/lib/calories';
+import { formatCalories, formatDistance, formatMovingTime, formatRelativeSync, getActivityAccent, pluralize } from '@/lib/format';
 import type { DashboardOverview } from '@/types/domain';
 
 type ProfileHeroProps = {
+  calorieSummary?: CalorieSummary;
   overview: DashboardOverview;
 };
 
-export const ProfileHero = ({ overview }: ProfileHeroProps) => {
+export const ProfileHero = ({ overview, calorieSummary }: ProfileHeroProps) => {
   const dominantType =
     (overview.ride_count ?? 0) > (overview.run_count ?? 0)
       ? 'Ride'
@@ -16,6 +18,7 @@ export const ProfileHero = ({ overview }: ProfileHeroProps) => {
         ? 'Run'
         : 'default';
   const accent = getActivityAccent(dominantType);
+  const hasCalories = Boolean(calorieSummary?.trackedActivities);
 
   return (
     <section className="hero-card" style={{ '--hero-glow': accent.glow } as CSSProperties}>
@@ -23,7 +26,9 @@ export const ProfileHero = ({ overview }: ProfileHeroProps) => {
         <p className="eyebrow">Movement portrait</p>
         <h2>{overview.display_name ?? overview.username ?? 'Your athlete profile'}</h2>
         <p className="hero-card__lede">
-          A public-facing snapshot of training rhythm, distance, elevation, and fresh activity arcs.
+          {hasCalories
+            ? 'A public-facing snapshot of training rhythm, calorie burn, distance, elevation, and fresh activity arcs.'
+            : 'A public-facing snapshot of training rhythm, distance, elevation, and fresh activity arcs.'}
         </p>
 
         <div className="hero-card__meta">
@@ -41,6 +46,7 @@ export const ProfileHero = ({ overview }: ProfileHeroProps) => {
           <span>{pluralize(overview.activity_count, 'activity')}</span>
           <span>{pluralize(overview.ride_count, 'ride')}</span>
           <span>{pluralize(overview.run_count, 'run')}</span>
+          {hasCalories ? <span>{pluralize(calorieSummary?.trackedActivities, 'calorie-tracked session')}</span> : null}
         </div>
       </div>
 
@@ -57,8 +63,13 @@ export const ProfileHero = ({ overview }: ProfileHeroProps) => {
           />
         </div>
         <div className="hero-card__totals">
-          <p>{formatDistance(overview.total_distance_meters)}</p>
-          <span>{formatMovingTime(overview.total_moving_time_seconds)}</span>
+          {hasCalories ? <span className="hero-card__totals-label">Estimated calories</span> : null}
+          <p>{hasCalories ? formatCalories(calorieSummary?.totalCalories) : formatDistance(overview.total_distance_meters)}</p>
+          <span>
+            {hasCalories
+              ? `${formatDistance(overview.total_distance_meters)} / ${formatMovingTime(overview.total_moving_time_seconds)} moving / ${formatCalories(calorieSummary?.thisMonthCalories)} this month`
+              : formatMovingTime(overview.total_moving_time_seconds)}
+          </span>
         </div>
       </motion.div>
     </section>

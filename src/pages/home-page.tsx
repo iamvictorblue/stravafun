@@ -12,9 +12,11 @@ import { SectionShell } from '@/components/ui/section-shell';
 import { Skeleton } from '@/components/ui/skeleton';
 import { StatCard } from '@/components/ui/stat-card';
 import { useActivitySpotlights, useDashboardOverview, useRecentActivities } from '@/hooks/use-dashboard';
-import { useAggregatedStats, useBreakdownStats, useHeatmapActivities } from '@/hooks/use-stats';
+import { useAggregatedStats, useBreakdownStats, useCalorieActivities, useHeatmapActivities } from '@/hooks/use-stats';
+import { summarizeCalorieActivities } from '@/lib/calories';
 import {
   formatActivityDate,
+  formatCalories,
   formatDistance,
   formatElevation,
   formatMovingTime,
@@ -163,6 +165,7 @@ type SpotlightCardData = {
 const buildSpotlightCards = (
   activities:
     | {
+        biggestBurn: Activity | null;
         biggestClimb: Activity | null;
         longestDistance: Activity | null;
         longestSession: Activity | null;
@@ -191,11 +194,17 @@ const buildSpotlightCards = (
         : ['0 km', '0h'],
     },
     {
-      activity: activities.longestSession,
-      eyebrow: 'Longest session',
-      primaryValue: activities.longestSession ? formatMovingTime(activities.longestSession.moving_time_seconds) : '',
-      secondaryMetrics: activities.longestSession
-        ? [formatDistance(activities.longestSession.distance_meters), formatElevation(activities.longestSession.total_elevation_gain)]
+      activity: activities.biggestBurn ?? activities.longestSession,
+      eyebrow: activities.biggestBurn ? 'Biggest burn' : 'Longest session',
+      primaryValue: activities.biggestBurn
+        ? formatCalories(activities.biggestBurn.kilojoules)
+        : activities.longestSession
+          ? formatMovingTime(activities.longestSession.moving_time_seconds)
+          : '',
+      secondaryMetrics: activities.biggestBurn
+        ? [formatDistance(activities.biggestBurn.distance_meters), formatMovingTime(activities.biggestBurn.moving_time_seconds)]
+        : activities.longestSession
+          ? [formatDistance(activities.longestSession.distance_meters), formatElevation(activities.longestSession.total_elevation_gain)]
         : ['0 km', '0 m'],
     },
   ];
@@ -213,8 +222,9 @@ const buildWeeklyRecap = (params: {
   recentActivities: Activity[];
   streakDays: number;
   displayName?: string | null;
+  weekCalories: number;
 }) => {
-  const { currentWeek, recentActivities, streakDays, displayName } = params;
+  const { currentWeek, recentActivities, streakDays, displayName, weekCalories } = params;
 
   if (!currentWeek) {
     return null;
@@ -235,7 +245,9 @@ const buildWeeklyRecap = (params: {
   const shareText = [
     `${athleteName} recap for ${formatWeekRange(currentWeek.bucket_date)}:`,
     `${formatDistance(currentWeek.total_distance_meters)} across ${formatCount(currentWeek.activity_count)} activities.`,
-    `${formatMovingTime(currentWeek.total_moving_time_seconds)} moving and ${formatElevation(currentWeek.total_elevation_gain)} climbed.`,
+    weekCalories > 0
+      ? `${formatMovingTime(currentWeek.total_moving_time_seconds)} moving, ${formatElevation(currentWeek.total_elevation_gain)} climbed, and ${formatCalories(weekCalories)} burned.`
+      : `${formatMovingTime(currentWeek.total_moving_time_seconds)} moving and ${formatElevation(currentWeek.total_elevation_gain)} climbed.`,
     streakDays > 0 ? `${formatCount(streakDays)} day streak still alive.` : 'Fresh week, fresh block.',
     highlight ? `Highlight: ${highlight.name} (${formatDistance(highlight.distance_meters)}).` : null,
   ]
@@ -257,8 +269,10 @@ export const HomePage = () => {
   const weeklyStatsQuery = useAggregatedStats('week');
   const monthlyStatsQuery = useAggregatedStats('month');
   const breakdownQuery = useBreakdownStats();
+  const calorieQuery = useCalorieActivities();
   const heatmapQuery = useHeatmapActivities();
   const streakSummary = summarizeStreak(heatmapQuery.data ?? []);
+  const calorieSummary = summarizeCalorieActivities(calorieQuery.data ?? []);
 
   if (overviewQuery.isLoading) {
     return (
@@ -314,6 +328,7 @@ export const HomePage = () => {
     recentActivities: recentActivitiesQuery.data ?? [],
     streakDays: streakSummary.currentStreak,
     displayName: overview.display_name ?? overview.username,
+    weekCalories: calorieSummary.thisWeekCalories,
   });
 
   const handleCopyWeeklyRecap = async () => {
@@ -333,12 +348,12 @@ export const HomePage = () => {
 
   return (
     <div className="stack-xl">
-      <ProfileHero overview={overview} />
+      <ProfileHero overview={overview} calorieSummary={calorieSummary} />
 
       <SectionShell
         eyebrow="Rolling windows"
         title="Current rhythm"
-        description="The home page now leads with the latest week and month so progress feels immediate instead of archival."
+        description="The home page now leads with calories and current volume so progress feels immediate instead of archival."
       >
         {statsAreLoading ? (
           <div className="stats-grid">
@@ -354,6 +369,21 @@ export const HomePage = () => {
         ) : (
           <div className="stats-grid">
             <StatCard
+              label="This week calories"
+              value={calorieSummary.thisWeekCalories}
+              formatter={formatCalories}
+              accent="#66c5ff"
+              subtitle={
+                calorieQuery.isLoading
+                  ? 'Reading calorie burn from synced activities'
+                  : calorieQuery.error
+                    ? 'Calorie totals unavailable right now'
+                    : calorieSummary.thisWeekActivities
+                      ? `${formatCount(calorieSummary.thisWeekActivities)} calorie-tracked activities this week`
+                      : 'No calorie-tracked activities this week'
+              }
+            />
+            <StatCard
               label="This week distance"
               value={currentWeek?.total_distance_meters ?? 0}
               formatter={formatDistance}
@@ -366,23 +396,19 @@ export const HomePage = () => {
               )}
             />
             <StatCard
-              label="This week moving time"
-              value={currentWeek?.total_moving_time_seconds ?? 0}
-              formatter={formatMovingTime}
-              accent="#66c5ff"
-              subtitle={`${formatCount(currentWeek?.activity_count ?? 0)} activities and ${formatElevation(currentWeek?.total_elevation_gain ?? 0)} climbed`}
-            />
-            <StatCard
-              label="This month distance"
-              value={currentMonth?.total_distance_meters ?? 0}
-              formatter={formatDistance}
+              label="This month calories"
+              value={calorieSummary.thisMonthCalories}
+              formatter={formatCalories}
               accent="#7cd6a4"
-              subtitle={describeChange(
-                currentMonth?.total_distance_meters,
-                previousMonth?.total_distance_meters,
-                formatDistance,
-                'month',
-              )}
+              subtitle={
+                calorieQuery.isLoading
+                  ? 'Building this month calorie snapshot'
+                  : calorieQuery.error
+                    ? 'Monthly calorie totals unavailable'
+                    : calorieSummary.thisMonthActivities
+                      ? `${formatCount(calorieSummary.thisMonthActivities)} calorie-tracked activities this month`
+                      : 'No calorie-tracked activities this month'
+              }
             />
             <StatCard
               label="Current streak"
@@ -460,8 +486,10 @@ export const HomePage = () => {
                 <strong>{formatElevation(currentWeek?.total_elevation_gain ?? 0)}</strong>
               </article>
               <article>
-                <span>Streak</span>
-                <strong>{formatCount(streakSummary.currentStreak)} days</strong>
+                <span>Calories</span>
+                <strong>
+                  {calorieSummary.thisWeekActivities ? formatCalories(calorieSummary.thisWeekCalories) : 'No calorie data'}
+                </strong>
               </article>
             </div>
 

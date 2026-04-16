@@ -12,7 +12,7 @@ The public site is anonymous. Visitors never log in to Strava. Only the owner co
 
 2. Backend
    Supabase Postgres stores athletes, activities, aggregates, streams, tokens, and sync logs.
-   Supabase Edge Functions handle OAuth callback, token refresh, daily sync, and manual sync.
+   Supabase Edge Functions handle OAuth callback, token refresh, public auto-sync, daily sync, and manual sync.
 
 3. Strava flow
    The owner visits `/connect`, enters `OWNER_SETUP_SECRET`, and is redirected to Strava OAuth.
@@ -131,6 +131,13 @@ That means anonymous visitors can read only safe dashboard data, while all secur
 - Refreshes the token when requested by an authorized caller
 - Useful for operational checks or future admin tooling
 
+### `strava-public-sync`
+
+- Designed for safe invocation from the public frontend
+- Checks whether a sync is already running
+- Skips work when the latest successful sync is still fresh
+- Runs a full sync only when the dashboard data is stale
+
 ### `strava-daily-sync`
 
 - Designed for scheduled invocation
@@ -198,6 +205,7 @@ supabase db push
 ```bash
 supabase functions deploy strava-oauth-callback
 supabase functions deploy strava-token-refresh
+supabase functions deploy strava-public-sync
 supabase functions deploy strava-daily-sync
 supabase functions deploy strava-manual-sync
 ```
@@ -214,6 +222,7 @@ supabase secrets set OWNER_SETUP_SECRET=...
 supabase secrets set PUBLIC_SITE_URL=...
 supabase secrets set STRAVA_OWNER_ATHLETE_ID=...
 supabase secrets set STRAVA_SYNC_MAX_PAGES=25
+supabase secrets set PUBLIC_SYNC_MIN_INTERVAL_MINUTES=360
 ```
 
 ## Strava App Setup
@@ -239,10 +248,11 @@ Recommended scope for this app:
 4. Click `Connect with Strava`.
 5. Authorize your Strava account.
 6. The callback stores tokens and runs the initial sync.
+7. Future visits to the public app can trigger a throttled automatic refresh when the data has gone stale.
 
 ## Scheduled Sync
 
-Use the Supabase dashboard to schedule the `strava-daily-sync` function once per day.
+Use the Supabase dashboard to schedule the `strava-daily-sync` function once per day if you want guaranteed background freshness even when nobody opens the site.
 
 Recommended schedule:
 

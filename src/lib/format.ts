@@ -24,8 +24,8 @@ export const formatMovingTime = (seconds: number | null | undefined) => {
 };
 
 export const formatCalories = (value: number | null | undefined) => {
-  if (!value) return '0 kcal';
-  return `${Math.round(value).toLocaleString()} kcal`;
+  if (!value) return '0 calories';
+  return `${Math.round(value).toLocaleString()} calories`;
 };
 
 export const formatActivityDate = (iso: string) => format(parseISO(iso), 'MMM d, yyyy');

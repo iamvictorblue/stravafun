@@ -9,3 +9,6 @@ verify_jwt = false
 
 [functions.strava-manual-sync]
 verify_jwt = false
+
+[functions.strava-public-sync]
+verify_jwt = false

@@ -18,6 +18,7 @@ export const env = {
   PUBLIC_SITE_URL: getEnv('PUBLIC_SITE_URL'),
   STRAVA_OWNER_ATHLETE_ID: Deno.env.get('STRAVA_OWNER_ATHLETE_ID') ?? '',
   STRAVA_SYNC_MAX_PAGES: Number(Deno.env.get('STRAVA_SYNC_MAX_PAGES') ?? '25'),
+  PUBLIC_SYNC_MIN_INTERVAL_MINUTES: Number(Deno.env.get('PUBLIC_SYNC_MIN_INTERVAL_MINUTES') ?? '360'),
 };
 
 export const createServiceClient = () =>

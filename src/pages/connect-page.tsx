@@ -56,8 +56,8 @@ export const ConnectPage = () => {
         <p className="eyebrow">Private owner controls</p>
         <h2>Connect Strava once</h2>
         <p>
-          This screen is only for the single owner setup flow. Visitors never need to log in and never touch
-          Strava directly.
+          This screen is only for the one-time owner connection. After that, the public app can keep itself fresh
+          automatically and visitors never touch Strava directly.
         </p>
 
         <form className="connect-form" onSubmit={onConnect}>
@@ -81,7 +81,7 @@ export const ConnectPage = () => {
             </button>
             <button type="button" className="ghost-button" onClick={onManualSync} disabled={!setupSecret.trim()}>
               <RefreshCcw size={15} />
-              Trigger manual sync
+              Sync now manually
             </button>
           </div>
         </form>

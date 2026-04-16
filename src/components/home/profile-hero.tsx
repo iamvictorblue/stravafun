@@ -56,12 +56,31 @@ export const ProfileHero = ({ overview, calorieSummary }: ProfileHeroProps) => {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.8 }}
       >
+        <div className="hero-card__halo" />
+        <motion.div
+          className="hero-card__float-card hero-card__float-card--north"
+          animate={{ y: [0, -8, 0] }}
+          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          <span>Archive</span>
+          <strong>{pluralize(overview.activity_count, 'session')}</strong>
+        </motion.div>
         <div className="hero-card__avatar-ring">
           <img
             src={overview.profile ?? overview.profile_medium ?? 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=400&q=80'}
             alt={overview.display_name ?? 'Athlete profile'}
           />
         </div>
+        <motion.div
+          className="hero-card__float-card hero-card__float-card--east"
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
+        >
+          <span>Mode split</span>
+          <strong>
+            {pluralize(overview.ride_count, 'ride')} / {pluralize(overview.run_count, 'run')}
+          </strong>
+        </motion.div>
         <div className="hero-card__totals">
           {hasCalories ? <span className="hero-card__totals-label">Estimated calories</span> : null}
           <p>{hasCalories ? formatCalories(calorieSummary?.totalCalories) : formatDistance(overview.total_distance_meters)}</p>
@@ -71,6 +90,14 @@ export const ProfileHero = ({ overview, calorieSummary }: ProfileHeroProps) => {
               : formatMovingTime(overview.total_moving_time_seconds)}
           </span>
         </div>
+        <motion.div
+          className="hero-card__float-card hero-card__float-card--south"
+          animate={{ y: [0, -6, 0] }}
+          transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
+        >
+          <span>Freshness</span>
+          <strong>{formatRelativeSync(overview.last_synced_at)}</strong>
+        </motion.div>
       </motion.div>
     </section>
   );

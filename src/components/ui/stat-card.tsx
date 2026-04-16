@@ -32,8 +32,11 @@ export const StatCard = ({ label, value, formatter = defaultFormatter, accent, s
           '--accent': accent,
         } as CSSProperties
       }
+      initial={{ opacity: 0, y: 22, scale: 0.98 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, amount: 0.35 }}
       whileHover={{ y: -5, scale: 1.01 }}
-      transition={{ duration: 0.25 }}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
     >
       <p className="stat-card__label">{label}</p>
       <motion.p className="stat-card__value">{display}</motion.p>

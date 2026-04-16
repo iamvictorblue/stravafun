@@ -10,6 +10,8 @@ const navItems = [
   { to: '/stats', label: 'Stats', icon: LineChart },
 ];
 
+const statusTokens = ['Auto Sync', 'Calorie Focus', 'Strava Motion', 'Weekly Arcs', 'Live Storytelling'];
+
 export const AppShell = () => {
   const { theme, toggleTheme } = useTheme();
 
@@ -20,9 +22,13 @@ export const AppShell = () => {
       <div className="ambient ambient--violet" />
 
       <header className="topbar">
-        <div>
-          <p className="eyebrow">Public dashboard</p>
+        <div className="topbar__brand">
+          <div className="topbar__eyebrow-row">
+            <p className="eyebrow">Public dashboard</p>
+            <span className="topbar__live-pill">Auto refresh armed</span>
+          </div>
           <h1 className="topbar__title">{siteTitle}</h1>
+          <p className="topbar__lede">A cinematic Strava dashboard for volume, effort, and momentum.</p>
         </div>
 
         <div className="topbar__controls">
@@ -44,6 +50,16 @@ export const AppShell = () => {
             {theme === 'dark' ? <SunMedium size={16} /> : <MoonStar size={16} />}
             {theme === 'dark' ? 'Light mode' : 'Dark mode'}
           </button>
+        </div>
+
+        <div className="topbar__status-rail" aria-hidden="true">
+          <div className="topbar__status-track">
+            {[...statusTokens, ...statusTokens].map((token, index) => (
+              <span key={`${token}-${index}`} className="topbar__status-token">
+                {token}
+              </span>
+            ))}
+          </div>
         </div>
       </header>
 

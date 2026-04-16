@@ -23,8 +23,11 @@ export const ActivityCard = ({ activity }: ActivityCardProps) => {
           '--activity-solid': accent.solid,
         } as CSSProperties
       }
-      whileHover={{ y: -6 }}
-      transition={{ duration: 0.22 }}
+      initial={{ opacity: 0, y: 30, rotateX: 6 }}
+      whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      whileHover={{ y: -8, rotateX: -2, rotateY: 1.5 }}
+      transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
     >
       <div className="activity-card__header">
         <div>

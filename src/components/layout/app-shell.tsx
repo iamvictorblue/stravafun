@@ -10,8 +10,6 @@ const navItems = [
   { to: '/stats', label: 'Stats', icon: LineChart },
 ];
 
-const statusTokens = ['Auto Sync', 'Calorie Focus', 'Strava Motion', 'Weekly Arcs', 'Live Storytelling'];
-
 export const AppShell = () => {
   const { theme, toggleTheme } = useTheme();
 
@@ -50,16 +48,6 @@ export const AppShell = () => {
             {theme === 'dark' ? <SunMedium size={16} /> : <MoonStar size={16} />}
             {theme === 'dark' ? 'Light mode' : 'Dark mode'}
           </button>
-        </div>
-
-        <div className="topbar__status-rail" aria-hidden="true">
-          <div className="topbar__status-track">
-            {[...statusTokens, ...statusTokens].map((token, index) => (
-              <span key={`${token}-${index}`} className="topbar__status-token">
-                {token}
-              </span>
-            ))}
-          </div>
         </div>
       </header>
 

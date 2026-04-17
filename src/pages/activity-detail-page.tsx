@@ -6,6 +6,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { SectionShell } from '@/components/ui/section-shell';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useActivityDetail, useActivityStream } from '@/hooks/use-activity-detail';
+import { getActivityCalories } from '@/lib/calories';
 import { formatActivityDate, formatCalories, formatDistance, formatElevation, formatMovingTime, formatPaceOrSpeed } from '@/lib/format';
 
 export const ActivityDetailPage = () => {
@@ -23,6 +24,7 @@ export const ActivityDetailPage = () => {
   }
 
   const activity = activityQuery.data;
+  const calories = getActivityCalories(activity);
 
   return (
     <div className="stack-xl">
@@ -36,7 +38,7 @@ export const ActivityDetailPage = () => {
           <span>{formatDistance(activity.distance_meters)}</span>
           <span>{formatPaceOrSpeed(activity)}</span>
           <span>{formatElevation(activity.total_elevation_gain)}</span>
-          {activity.kilojoules ? <span>{formatCalories(activity.kilojoules)}</span> : null}
+          {calories ? <span>{formatCalories(calories)}</span> : null}
         </div>
       </section>
 
@@ -57,7 +59,7 @@ export const ActivityDetailPage = () => {
         </article>
         <article className="mini-stat-card">
           <p>Est. calories</p>
-          <strong>{activity.kilojoules ? formatCalories(activity.kilojoules) : 'Unavailable'}</strong>
+          <strong>{calories ? formatCalories(calories) : 'Unavailable'}</strong>
         </article>
       </div>
 

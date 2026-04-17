@@ -44,7 +44,7 @@ export const CalorieTrendChart = ({ title, granularity, stats }: CalorieTrendCha
               }}
               formatter={(value, _name, item) => {
                 const activities = Number(item.payload?.activityCount ?? 0);
-                return [formatCalories(Number(value ?? 0)), `${activities} tracked activities`];
+                return [formatCalories(Number(value ?? 0)), `${activities} activities with calorie estimates`];
               }}
             />
             <Area

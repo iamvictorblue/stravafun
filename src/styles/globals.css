@@ -307,43 +307,6 @@ strong {
   flex-wrap: wrap;
 }
 
-.topbar__status-rail {
-  grid-column: 1 / -1;
-  overflow: hidden;
-  border-radius: 999px;
-  padding: 12px;
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--surface-soft) 100%, transparent), transparent),
-    color-mix(in srgb, var(--surface-soft) 72%, transparent);
-  border: 1px solid var(--surface-soft-border);
-}
-
-.topbar__status-track {
-  display: flex;
-  gap: 12px;
-  width: max-content;
-  animation: marqueeDrift 22s linear infinite;
-}
-
-.topbar__status-token {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--muted);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-size: 0.72rem;
-}
-
-.topbar__status-token::before {
-  content: '•';
-  color: var(--orange);
-}
-
 .theme-toggle {
   display: inline-flex;
   align-items: center;
@@ -1307,16 +1270,6 @@ strong {
   }
 }
 
-@keyframes marqueeDrift {
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(calc(-50% - 6px));
-  }
-}
-
 @keyframes heroGlow {
   0%,
   100% {
@@ -1409,14 +1362,6 @@ strong {
   .detail-hero,
   .weekly-recap-card {
     padding: 22px;
-  }
-
-  .topbar__status-rail {
-    padding: 10px;
-  }
-
-  .topbar__status-track {
-    animation-duration: 26s;
   }
 
   .hero-card h2,

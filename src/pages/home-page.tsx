@@ -379,8 +379,8 @@ export const HomePage = () => {
                   : calorieQuery.error
                     ? 'Calorie totals unavailable right now'
                     : calorieSummary.thisWeekActivities
-                      ? `${formatCount(calorieSummary.thisWeekActivities)} calorie-tracked activities this week`
-                      : 'No calorie-tracked activities this week'
+                      ? `${formatCount(calorieSummary.thisWeekActivities)} activities with calorie estimates this week`
+                      : 'No calorie estimates this week'
               }
             />
             <StatCard
@@ -406,8 +406,8 @@ export const HomePage = () => {
                   : calorieQuery.error
                     ? 'Monthly calorie totals unavailable'
                     : calorieSummary.thisMonthActivities
-                      ? `${formatCount(calorieSummary.thisMonthActivities)} calorie-tracked activities this month`
-                      : 'No calorie-tracked activities this month'
+                      ? `${formatCount(calorieSummary.thisMonthActivities)} activities with calorie estimates this month`
+                      : 'No calorie estimates this month'
               }
             />
             <StatCard

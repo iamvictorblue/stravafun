@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowUpRight, Flame, Mountain, Timer } from 'lucide-react';
 import type { CSSProperties } from 'react';
 import { RoutePreview } from '@/components/activity/route-preview';
+import { getActivityCalories } from '@/lib/calories';
 import { formatActivityDate, formatCalories, formatDistance, formatElevation, formatPaceOrSpeed, getActivityAccent } from '@/lib/format';
 import type { Activity } from '@/types/domain';
 
@@ -12,6 +13,7 @@ type ActivityCardProps = {
 
 export const ActivityCard = ({ activity }: ActivityCardProps) => {
   const accent = getActivityAccent(activity.sport_type);
+  const calories = getActivityCalories(activity);
 
   return (
     <motion.article
@@ -56,10 +58,10 @@ export const ActivityCard = ({ activity }: ActivityCardProps) => {
           <Timer size={14} />
           {Math.round(activity.moving_time_seconds / 60)} min
         </span>
-        {activity.kilojoules ? (
+        {calories ? (
           <span>
             <Flame size={14} />
-            {formatCalories(activity.kilojoules)}
+            {formatCalories(calories)}
           </span>
         ) : null}
       </div>

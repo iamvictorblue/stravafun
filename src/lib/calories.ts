@@ -21,8 +21,67 @@ export type CalorieSummary = {
 
 const getWeekStart = (date: Date) => startOfWeek(date, { weekStartsOn: 1 });
 
-export const getActivityCalories = (activity: Pick<CalorieActivity, 'kilojoules'> | null | undefined) =>
-  Math.max(0, Math.round(activity?.kilojoules ?? 0));
+const DEFAULT_WEIGHT_KG = 70;
+
+const getSpeedKph = (activity: Pick<CalorieActivity, 'distance_meters' | 'moving_time_seconds'>) => {
+  if (!activity.distance_meters || !activity.moving_time_seconds) {
+    return 0;
+  }
+
+  return (activity.distance_meters / 1000) / (activity.moving_time_seconds / 3600);
+};
+
+const getEstimatedMet = (activity: Pick<CalorieActivity, 'sport_type' | 'distance_meters' | 'moving_time_seconds'>) => {
+  const speedKph = getSpeedKph(activity);
+
+  switch (activity.sport_type) {
+    case 'Run':
+      if (speedKph >= 12.9) return 12.8;
+      if (speedKph >= 11.3) return 11;
+      if (speedKph >= 9.7) return 9.8;
+      return 8.3;
+    case 'Walk':
+      if (speedKph >= 6.4) return 5;
+      if (speedKph >= 5.6) return 4.3;
+      return 3.5;
+    case 'Hike':
+      return speedKph >= 5 ? 6.5 : 6;
+    case 'Ride':
+      if (speedKph >= 32) return 16;
+      if (speedKph >= 25.7) return 12;
+      if (speedKph >= 19) return 8;
+      return 6.8;
+    case 'Workout':
+      return 5.5;
+    default:
+      return speedKph >= 8 ? 7 : 5;
+  }
+};
+
+export const getActivityCalories = (
+  activity:
+    | Pick<CalorieActivity, 'kilojoules' | 'sport_type' | 'distance_meters' | 'moving_time_seconds'>
+    | null
+    | undefined,
+  athleteWeightKg = DEFAULT_WEIGHT_KG,
+) => {
+  if (!activity) {
+    return 0;
+  }
+
+  if (activity.kilojoules && activity.kilojoules > 0) {
+    return Math.max(0, Math.round(activity.kilojoules));
+  }
+
+  if (!activity.moving_time_seconds) {
+    return 0;
+  }
+
+  const met = getEstimatedMet(activity);
+  const minutes = activity.moving_time_seconds / 60;
+  const calories = (met * 3.5 * athleteWeightKg * minutes) / 200;
+  return Math.max(0, Math.round(calories));
+};
 
 export const summarizeCalorieActivities = (
   activities: CalorieActivity[],

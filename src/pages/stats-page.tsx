@@ -81,7 +81,7 @@ export const StatsPage = () => {
         ) : (
           <EmptyState
             title="Calorie trend unavailable"
-            description="More calorie-tracked activities are needed before a trend can be charted here."
+            description="More activities with calorie estimates are needed before a trend can be charted here."
           />
         )}
         <DistanceTrendChart title="Weekly rhythm" granularity="week" stats={weeklyQuery.data?.slice(-10) ?? []} />

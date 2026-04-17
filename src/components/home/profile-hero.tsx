@@ -46,7 +46,7 @@ export const ProfileHero = ({ overview, calorieSummary }: ProfileHeroProps) => {
           <span>{pluralize(overview.activity_count, 'activity')}</span>
           <span>{pluralize(overview.ride_count, 'ride')}</span>
           <span>{pluralize(overview.run_count, 'run')}</span>
-          {hasCalories ? <span>{pluralize(calorieSummary?.trackedActivities, 'calorie-tracked session')}</span> : null}
+          {hasCalories ? <span>{pluralize(calorieSummary?.trackedActivities, 'session with calorie estimate')}</span> : null}
         </div>
       </div>
 

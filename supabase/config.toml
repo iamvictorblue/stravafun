@@ -12,3 +12,6 @@ verify_jwt = false
 
 [functions.strava-public-sync]
 verify_jwt = false
+
+[functions.apple-health-import]
+verify_jwt = false
